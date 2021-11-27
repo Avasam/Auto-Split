@@ -22,6 +22,7 @@ def compare_histograms(source, capture) -> float:
 
     return 1 - cv2.compareHist(source_hist, capture_hist, cv2.HISTCMP_BHATTACHARYYA)
 
+
 def compare_histograms_masked(source, capture, mask) -> float:
     """
     Compares two images by calculating their histograms using a mask, normalizing
@@ -40,6 +41,7 @@ def compare_histograms_masked(source, capture, mask) -> float:
 
     return 1 - cv2.compareHist(source_hist, capture_hist, cv2.HISTCMP_BHATTACHARYYA)
 
+
 def compare_l2_norm(source, capture) -> float:
     """
     Compares two images by calculating the L2 Error (square-root
@@ -55,6 +57,7 @@ def compare_l2_norm(source, capture) -> float:
     max_error = (source.size ** 0.5) * 255
 
     return 1 - (error / max_error)
+
 
 def compare_l2_norm_masked(source, capture, mask) -> float:
     """
@@ -72,7 +75,10 @@ def compare_l2_norm_masked(source, capture, mask) -> float:
     # The L2 Error is summed across all pixels, so this normalizes
     max_error = (3 * np.count_nonzero(mask) * 255 * 255) ** 0.5
 
+    if not max_error:
+        return 0
     return 1 - (error / max_error)
+
 
 def compare_template(source, capture) -> float:
     """
@@ -94,6 +100,7 @@ def compare_template(source, capture) -> float:
 
     return 1 - (min_val / max_error)
 
+
 def compare_template_masked(source, capture, mask) -> float:
     """
     Checks if the source is located within the capture by using
@@ -112,7 +119,8 @@ def compare_template_masked(source, capture, mask) -> float:
 
     return 1 - (min_val/np.count_nonzero(mask))
 
-def compare_phash(source, capture):
+
+def compare_phash(source, capture) -> float:
     """
     Compares the pHash of the two given images and returns the similarity between
     the two.
@@ -130,7 +138,8 @@ def compare_phash(source, capture):
 
     return 1 - ((source_hash - capture_hash) / 64.0)
 
-def compare_phash_masked(source, capture, mask):
+
+def compare_phash_masked(source, capture, mask) -> float:
     """
     Compares the pHash of the two given images and returns the similarity between
     the two.
@@ -155,10 +164,12 @@ def compare_phash_masked(source, capture, mask):
     source_hash = imagehash.phash(source)
     capture_hash = imagehash.phash(capture)
 
+    if not source_hash + capture_hash:
+        return 0
     return 1 - ((source_hash - capture_hash) / 64.0)
 
 
 def checkIfImageHasTransparency(image):
     # TODO check for first transparent pixel, no need to iterate through the whole image
     # Check if there's a transparency channel (4th channel) and if at least one pixel is transparent (< 255)
-    return image.shape[2] == 4 and np.mean(image[:, :, 3]) != 255
+    return bool(image.shape[2] == 4 and np.mean(image[:, :, 3]) != 255)
