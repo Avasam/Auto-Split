@@ -1,0 +1,45 @@
+name: Build and lint
+on:
+  push:
+    branches:
+      - main
+      - master
+      - github-actions
+  pull_request:
+    branches:
+      - main
+      - master
+      - dev
+      - develop
+      - github-actions
+jobs:
+  Pyright:
+    runs-on: windows-latest
+    steps:
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event on ${{ github.repository }}/${{ github.ref }}."
+      - run: echo "`nRunning ${{ job.name }}..."
+      - run: pyright
+  Pylint:
+    runs-on: windows-latest
+    steps:
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event on ${{ github.repository }}/${{ github.ref }}."
+      - run: echo "`nRunning ${{ job.name }}..."
+      - run: pylint --reports=y --output-format=colorized $(git ls-files '**/*.py*')
+  Bandit:
+    runs-on: windows-latest
+    steps:
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event on ${{ github.repository }}/${{ github.ref }}."
+      - run: echo "`nRunning ${{ job.name }}..."
+      - run: bandit -n 1 --severity-level medium -r src
+  Flake8:
+    runs-on: windows-latest
+    steps:
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event on ${{ github.repository }}/${{ github.ref }}."
+      - run: echo "`nRunning ${{ job.name }}..."
+      - run: flake8
+  Build:
+    runs-on: windows-latest
+    steps:
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event on ${{ github.repository }}/${{ github.ref }}."
+      - run: echo "`nRunning ${{ job.name }}..."
+      - run: flake8
