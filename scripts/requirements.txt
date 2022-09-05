@@ -29,5 +29,5 @@ winsdk>=v1.0.0b4
 D3DShot
 #
 # Build and compile resources
-PyInstaller
+git+https://github.com/Avasam/pyinstaller.git@py.typed#egg=PyInstaller
 PySide6
