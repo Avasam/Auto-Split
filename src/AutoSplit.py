@@ -236,7 +236,7 @@ class AutoSplit(QMainWindow, design.Ui_MainWindow):
 
     def __live_image_function(self):
         capture_region_window_label = self.settings_dict["capture_device_name"] \
-            if self.settings_dict["capture_method"] == CaptureMethodEnum.VIDEO_CAPTURE_DEVICE \
+            if "VIDEO_CAPTURE_DEVICE" in self.settings_dict["capture_method"] \
             else self.settings_dict["captured_window_title"]
         self.capture_region_window_label.setText(capture_region_window_label)
         if not (self.settings_dict["live_capture_region"] and capture_region_window_label):
@@ -750,7 +750,7 @@ class AutoSplit(QMainWindow, design.Ui_MainWindow):
         # This most likely means we lost capture (ie the captured window was closed, crashed, etc.)
         if not is_valid_image(capture):
             # Try to recover by using the window name
-            if self.settings_dict["capture_method"] == CaptureMethodEnum.VIDEO_CAPTURE_DEVICE:
+            if "VIDEO_CAPTURE_DEVICE" in self.settings_dict["capture_method"]:
                 self.live_image.setText("Waiting for capture device...")
             else:
                 self.live_image.setText("Trying to recover window...")

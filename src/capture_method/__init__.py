@@ -6,13 +6,14 @@ from dataclasses import dataclass
 from enum import Enum, EnumMeta, unique
 from typing import TYPE_CHECKING, TypedDict
 
-from pygrabber import dshow_graph
+from pygrabber.dshow_graph import FilterGraph
 from winsdk.windows.media.capture import MediaCapture
 
 from capture_method.BitBltCaptureMethod import BitBltCaptureMethod
 from capture_method.CaptureMethodBase import CaptureMethodBase
 from capture_method.DesktopDuplicationCaptureMethod import DesktopDuplicationCaptureMethod
 from capture_method.ForceFullContentRenderingCaptureMethod import ForceFullContentRenderingCaptureMethod
+from capture_method.PyGrabberCaptureMethod import PyGrabberCaptureMethod
 from capture_method.VideoCaptureDeviceCaptureMethod import VideoCaptureDeviceCaptureMethod
 from capture_method.WindowsGraphicsCaptureMethod import WindowsGraphicsCaptureMethod
 from utils import WINDOWS_BUILD_NUMBER
@@ -61,6 +62,9 @@ class CaptureMethodEnum(Enum, metaclass=CaptureMethodMeta):
     def __eq__(self, other: object):
         return self.value == other.__str__()
 
+    def __contains__(self, other: object):
+        return other.__str__() in self.value
+
     # Restore hashing functionality
     def __hash__(self):
         return self.value.__hash__()
@@ -70,7 +74,8 @@ class CaptureMethodEnum(Enum, metaclass=CaptureMethodMeta):
     WINDOWS_GRAPHICS_CAPTURE = "WINDOWS_GRAPHICS_CAPTURE"
     PRINTWINDOW_RENDERFULLCONTENT = "PRINTWINDOW_RENDERFULLCONTENT"
     DESKTOP_DUPLICATION = "DESKTOP_DUPLICATION"
-    VIDEO_CAPTURE_DEVICE = "VIDEO_CAPTURE_DEVICE"
+    VIDEO_CAPTURE_DEVICE_OPENCV = "VIDEO_CAPTURE_DEVICE_OPENCV"
+    VIDEO_CAPTURE_DEVICE_PYGRABBER = "VIDEO_CAPTURE_DEVICE_PYGRABBER"
 
 
 class CaptureMethodDict(OrderedDict[CaptureMethodEnum, CaptureMethodInfo]):
@@ -151,17 +156,25 @@ CAPTURE_METHODS = CaptureMethodDict({
         ),
         implementation=ForceFullContentRenderingCaptureMethod,
     ),
-    CaptureMethodEnum.VIDEO_CAPTURE_DEVICE: CaptureMethodInfo(
-        name="Video Capture Device",
+    CaptureMethodEnum.VIDEO_CAPTURE_DEVICE_OPENCV: CaptureMethodInfo(
+        name="Video Capture Device (OpenCV)",
         short_description="see below",
         description=(
             "\nUses a Video Capture Device, like a webcam, virtual cam, or capture card. "
             "\nYou can select one below. "
-            "\nThere are currently performance issues, but it might be more convenient. "
             "\nIf you want to use this with OBS' Virtual Camera, use the Virtualcam plugin instead "
             "\nhttps://obsproject.com/forum/resources/obs-virtualcam.949/."
         ),
         implementation=VideoCaptureDeviceCaptureMethod,
+    ),
+    CaptureMethodEnum.VIDEO_CAPTURE_DEVICE_PYGRABBER: CaptureMethodInfo(
+        name="Video Capture Device (PyGrabber)",
+        short_description="see below",
+        description=(
+            "\nUses a Video Capture Device, like a webcam, virtual cam, or capture card. "
+            "\nYou can select one below. "
+        ),
+        implementation=PyGrabberCaptureMethod,
     ),
 })
 
@@ -188,7 +201,7 @@ if (  # Windows Graphics Capture requires a minimum Windows Build
 def change_capture_method(selected_capture_method: CaptureMethodEnum, autosplit: AutoSplit):
     autosplit.capture_method.close(autosplit)
     autosplit.capture_method = CAPTURE_METHODS[selected_capture_method].implementation(autosplit)
-    if selected_capture_method == CaptureMethodEnum.VIDEO_CAPTURE_DEVICE:
+    if "VIDEO_CAPTURE_DEVICE" in selected_capture_method:
         autosplit.select_region_button.setDisabled(True)
         autosplit.select_window_button.setDisabled(True)
     else:
@@ -205,7 +218,7 @@ class CameraInfo():
 
 
 async def get_all_video_capture_devices() -> list[CameraInfo]:
-    named_video_inputs = dshow_graph.FilterGraph().get_input_devices()
+    named_video_inputs = FilterGraph().get_input_devices()
 
     async def get_camera_info(index: int, device_name: str):
         backend = ""

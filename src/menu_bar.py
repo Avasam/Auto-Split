@@ -160,8 +160,11 @@ class __SettingsWidget(QtWidgets.QWidget, settings_ui.Ui_SettingsWidget):
         capture_device = self.__video_capture_devices[device_index]
         self.autosplit.settings_dict["capture_device_name"] = capture_device.name
         self.autosplit.settings_dict["capture_device_id"] = capture_device.device_id
-        if self.autosplit.settings_dict["capture_method"] == CaptureMethodEnum.VIDEO_CAPTURE_DEVICE:
-            change_capture_method(CaptureMethodEnum.VIDEO_CAPTURE_DEVICE, self.autosplit)
+        if "VIDEO_CAPTURE_DEVICE" in self.autosplit.settings_dict["capture_method"]:
+            change_capture_method(
+                cast(CaptureMethodEnum, self.autosplit.settings_dict["capture_method"]),
+                self.autosplit,
+            )
 
     @fire_and_forget
     def __set_all_capture_devices(self):

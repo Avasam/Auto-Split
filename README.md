@@ -95,7 +95,6 @@ This program can be used to automatically start, split, and reset your preferred
     About 10-15x slower than BitBlt based on original window size and can mess up some applications' rendering pipelines.  
 - **Video Capture Device**
     Uses a Video Capture Device, like a webcam, virtual cam, or capture card.  
-    There are currently performance issues, but it might be more convenient.  
     If you want to use this with OBS' Virtual Camera, use the [Virtualcam plugin](https://obsproject.com/forum/resources/obs-virtualcam.949/) instead.  
 
 #### Capture Device
