@@ -19,8 +19,9 @@ if TYPE_CHECKING:
 COMPARISON_RESIZE_WIDTH = 320
 COMPARISON_RESIZE_HEIGHT = 240
 COMPARISON_RESIZE = (COMPARISON_RESIZE_WIDTH, COMPARISON_RESIZE_HEIGHT)
-LOWER_BOUND = np.array([0, 0, 0, 1], dtype="uint8")
-UPPER_BOUND = np.array([MAXBYTE, MAXBYTE, MAXBYTE, MAXBYTE], dtype="uint8")
+COMPARISON_RESIZE_AREA = COMPARISON_RESIZE_WIDTH * COMPARISON_RESIZE_HEIGHT
+MASK_LOWER_BOUND = np.array([0, 0, 0, 1], dtype="uint8")
+MASK_UPPER_BOUND = np.array([MAXBYTE, MAXBYTE, MAXBYTE, MAXBYTE], dtype="uint8")
 START_KEYWORD = "start_auto_splitter"
 RESET_KEYWORD = "reset"
 
@@ -108,15 +109,20 @@ class AutoSplitImage():
             error_messages.image_type(path)
             return
 
-        image = cv2.resize(image, COMPARISON_RESIZE, interpolation=cv2.INTER_NEAREST)
         self._has_transparency = check_if_image_has_transparency(image)
+        comparison_resize = COMPARISON_RESIZE
         # If image has transparency, create a mask
         if self._has_transparency:
+            alpha_channel = image[:, :, 3]
+            resize_control_ratio = int(min(1, COMPARISON_RESIZE_AREA / cv2.countNonZero(alpha_channel)) ** 0.5)
+            comparison_resize = (resize_control_ratio * COMPARISON_RESIZE_WIDTH,
+                                 resize_control_ratio * COMPARISON_RESIZE_HEIGHT)
             # Create mask based on resized, nearest neighbor interpolated split image
-            self.mask = cv2.inRange(image, LOWER_BOUND, UPPER_BOUND)
+            self.mask = cv2.inRange(alpha_channel, MASK_LOWER_BOUND, MASK_UPPER_BOUND)
         # Add Alpha channel if missing
         elif image.shape[2] == 3:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
+        image = cv2.resize(image, comparison_resize, interpolation=cv2.INTER_NEAREST)
 
         self.byte_array = image
 
