@@ -8,9 +8,17 @@
       72
     ]
   },
+  "trailing-spaces.includeEmptyLines": true,
+  "trailing-spaces.trimOnSave": true,
+  "trailing-spaces.syntaxIgnore": [
+    "markdown"
+  ],
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false,
+  },
+  "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
-  "files.trimTrailingWhitespace": true,
   "editor.comments.insertSpace": true,
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
@@ -22,11 +30,6 @@
     "source.fixAll.convertImportFormat": true,
     "source.organizeImports": true,
   },
-  "trailing-spaces.includeEmptyLines": true,
-  "trailing-spaces.trimOnSave": true,
-  "trailing-spaces.syntaxIgnore": [
-    "markdown"
-  ],
   "emeraldwalk.runonsave": {
     "commands": [
       {
