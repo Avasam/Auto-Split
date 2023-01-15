@@ -8,17 +8,18 @@ import signal
 import sys
 from time import time
 from types import FunctionType
+from typing import Optional
 
 import certifi
 import cv2
 from psutil import process_iter
-from PyQt6 import QtCore, QtGui
-from PyQt6.QtTest import QTest
-from PyQt6.QtWidgets import QApplication, QFileDialog, QLabel, QMainWindow, QMessageBox, QWidget
+from PySide6 import QtCore, QtGui
+from PySide6.QtTest import QTest
+from PySide6.QtWidgets import QApplication, QFileDialog, QLabel, QMainWindow, QMessageBox, QWidget
 
 import error_messages
 import user_profile
-from AutoControlledWorker import AutoControlledWorker
+from AutoControlledThread import AutoControlledThread
 from AutoSplitImage import START_KEYWORD, AutoSplitImage, ImageType
 from capture_method import CaptureMethodBase, CaptureMethodEnum
 from gen import about, design, settings, update_checker
@@ -48,16 +49,16 @@ class AutoSplit(QMainWindow, design.Ui_MainWindow):  # pylint: disable=too-many-
     is_auto_controlled = "--auto-controlled" in sys.argv
 
     # Signals
-    start_auto_splitter_signal = QtCore.pyqtSignal()
-    reset_signal = QtCore.pyqtSignal()
-    skip_split_signal = QtCore.pyqtSignal()
-    undo_split_signal = QtCore.pyqtSignal()
-    pause_signal = QtCore.pyqtSignal()
-    after_setting_hotkey_signal = QtCore.pyqtSignal()
-    update_checker_widget_signal = QtCore.pyqtSignal(str, bool)
-    load_start_image_signal = QtCore.pyqtSignal([], [bool], [bool, bool])
+    start_auto_splitter_signal = QtCore.Signal()
+    reset_signal = QtCore.Signal()
+    skip_split_signal = QtCore.Signal()
+    undo_split_signal = QtCore.Signal()
+    pause_signal = QtCore.Signal()
+    after_setting_hotkey_signal = QtCore.Signal()
+    update_checker_widget_signal = QtCore.Signal(str, bool)
+    load_start_image_signal = QtCore.Signal(Optional[bool], Optional[bool])
     # Use this signal when trying to show an error from outside the main thread
-    show_error_signal = QtCore.pyqtSignal(FunctionType)
+    show_error_signal = QtCore.Signal(FunctionType)
 
     # Timers
     timer_live_image = QtCore.QTimer()
@@ -97,7 +98,7 @@ class AutoSplit(QMainWindow, design.Ui_MainWindow):  # pylint: disable=too-many-
     reset_image: AutoSplitImage | None = None
     split_images: list[AutoSplitImage] = []
     split_image: AutoSplitImage | None = None
-    update_auto_control: QtCore.QThread | None = None
+    update_auto_control: AutoControlledThread | None = None
 
     def __init__(self, parent: QWidget | None = None):  # pylint: disable=too-many-statements
         super().__init__(parent)
@@ -133,10 +134,7 @@ class AutoSplit(QMainWindow, design.Ui_MainWindow):  # pylint: disable=too-many-
             print(f"{AUTOSPLIT_VERSION}\n{os.getpid()}", flush=True)
 
             # Use and Start the thread that checks for updates from LiveSplit
-            self.update_auto_control = QtCore.QThread()
-            worker = AutoControlledWorker(self)
-            worker.moveToThread(self.update_auto_control)
-            self.update_auto_control.started.connect(worker.run)
+            self.update_auto_control = AutoControlledThread(self)
             self.update_auto_control.start()
 
         # split image folder line edit text
@@ -191,9 +189,8 @@ class AutoSplit(QMainWindow, design.Ui_MainWindow):  # pylint: disable=too-many-
         self.update_checker_widget_signal.connect(
             lambda latest_version, check_on_open: open_update_checker(self, latest_version, check_on_open),
         )
+
         self.load_start_image_signal.connect(self.__load_start_image)
-        self.load_start_image_signal[bool].connect(self.__load_start_image)
-        self.load_start_image_signal[bool, bool].connect(self.__load_start_image)
         self.reset_signal.connect(self.reset)
         self.skip_split_signal.connect(self.skip_split)
         self.undo_split_signal.connect(self.undo_split)
@@ -772,7 +769,7 @@ class AutoSplit(QMainWindow, design.Ui_MainWindow):  # pylint: disable=too-many-
 
         QApplication.processEvents()
         if safe_to_reload_start_image:
-            self.load_start_image_signal[bool, bool].emit(False, False)
+            self.load_start_image_signal.emit(False, False)
 
     def __get_capture_for_comparison(self):
         """

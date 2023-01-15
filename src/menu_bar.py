@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 import requests
 from packaging.version import parse as version_parse
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 from requests.exceptions import RequestException
 
 import error_messages
@@ -14,7 +14,7 @@ import user_profile
 from capture_method import (
     CAPTURE_METHODS, CameraInfo, CaptureMethodEnum, change_capture_method, get_all_video_capture_devices,
 )
-from gen import about, design, resources_rc, settings as settings_ui, update_checker  # noqa F401
+from gen import about, design, settings as settings_ui, update_checker
 from hotkeys import HOTKEYS, Hotkey, set_hotkey
 from utils import (
     AUTOSPLIT_VERSION, FIRST_WIN_11_BUILD, GITHUB_REPOSITORY, WINDOWS_BUILD_NUMBER, decimal, fire_and_forget,
@@ -104,7 +104,6 @@ def about_qt():
 
 def about_qt_for_python():
     webbrowser.open("https://wiki.qt.io/Qt_for_Python")
-    webbrowser.open("https://www.riverbankcomputing.com/software/pyqt")
 
 
 def check_for_updates(autosplit: AutoSplit, check_on_open: bool = False):

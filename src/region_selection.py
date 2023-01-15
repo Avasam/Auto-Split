@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING
 
 import cv2
 import numpy as np
-from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtTest import QTest
+from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6.QtTest import QTest
 from win32 import win32gui
 from win32con import SM_CXVIRTUALSCREEN, SM_CYVIRTUALSCREEN, SM_XVIRTUALSCREEN, SM_YVIRTUALSCREEN
 from winsdk._winrt import initialize_with_window

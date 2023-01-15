@@ -4,7 +4,7 @@ import os
 from typing import TYPE_CHECKING, TypedDict, cast
 
 import toml
-from PyQt6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 import error_messages
 from capture_method import CAPTURE_METHODS, CaptureMethodEnum, Region, change_capture_method
