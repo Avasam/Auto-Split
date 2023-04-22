@@ -85,7 +85,7 @@ class AutoSplit(QMainWindow, design.Ui_MainWindow):
     split_image_number = 0
     split_images_and_loop_number: list[tuple[AutoSplitImage, int]] = []
     split_groups: list[list[int]] = []
-    capture_method = CaptureMethodBase()
+    capture_method = CaptureMethodBase(None)
     is_running = False
 
     # Last loaded settings empty and last successful loaded settings file path to None until we try to load them

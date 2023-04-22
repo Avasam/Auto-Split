@@ -103,7 +103,7 @@ if (  # Windows Graphics Capture requires a minimum Windows Build
 ):
     CAPTURE_METHODS[CaptureMethodEnum.WINDOWS_GRAPHICS_CAPTURE] = WindowsGraphicsCaptureMethod
 CAPTURE_METHODS[CaptureMethodEnum.BITBLT] = BitBltCaptureMethod
-try:
+try:  # Test for laptop cross-GPU Desktop Duplication issue
     import d3dshot
     d3dshot.create(capture_output="numpy")
 except (ModuleNotFoundError, COMError):

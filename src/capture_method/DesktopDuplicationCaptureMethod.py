@@ -28,8 +28,8 @@ class DesktopDuplicationCaptureMethod(BitBltCaptureMethod):
         + f"\nhttps://www.github.com/{GITHUB_REPOSITORY}#capture-method "
     )
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, autosplit: AutoSplit | None):
+        super().__init__(autosplit)
         # Must not set statically as some laptops will throw an error
         self.desktop_duplication = d3dshot.create(capture_output="numpy")
 
