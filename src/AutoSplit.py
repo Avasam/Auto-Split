@@ -8,7 +8,7 @@ import sys
 from collections.abc import Callable
 from time import time
 from types import FunctionType
-from typing import NoReturn, Optional
+from typing import NoReturn, Union
 
 import certifi
 import cv2
@@ -42,6 +42,7 @@ from utils import AUTOSPLIT_VERSION, FROZEN, auto_split_directory, decimal, is_v
 
 CHECK_FPS_ITERATIONS = 10
 DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = 2
+OptionalBool = type(Union[bool, None])
 
 # Needed when compiled, along with the custom hook-requests PyInstaller hook
 os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
@@ -63,7 +64,7 @@ class AutoSplit(QMainWindow, design.Ui_MainWindow):
     pause_signal = QtCore.Signal()
     after_setting_hotkey_signal = QtCore.Signal()
     update_checker_widget_signal = QtCore.Signal(str, bool)
-    load_start_image_signal = QtCore.Signal(type[Optional[bool]], type[Optional[bool]])
+    load_start_image_signal = QtCore.Signal(OptionalBool, OptionalBool)
     # Use this signal when trying to show an error from outside the main thread
     show_error_signal = QtCore.Signal(FunctionType)
 
@@ -227,7 +228,7 @@ class AutoSplit(QMainWindow, design.Ui_MainWindow):
             # set the split image folder line to the directory text
             self.settings_dict["split_image_directory"] = new_split_image_directory
             self.split_image_folder_input.setText(f"{new_split_image_directory}/")
-            self.load_start_image_signal.emit()
+            self.load_start_image_signal.emit(None, None)  # TODO: Make optional PySide signal arguments
 
     def __live_image_function(self):
         capture_region_window_label = self.settings_dict["capture_device_name"] \

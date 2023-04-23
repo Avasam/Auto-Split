@@ -170,7 +170,7 @@ def load_settings(autosplit: AutoSplit, from_path: str = ""):
     autosplit.last_successfully_loaded_settings_file_path = load_settings_file_path
     # TODO: Should this check be in `__load_start_image` ?
     if not autosplit.is_running:
-        autosplit.load_start_image_signal.emit()
+        autosplit.load_start_image_signal.emit(None, None)  # TODO: Make optional PySide signal arguments
 
 
 def load_settings_on_open(autosplit: AutoSplit):
