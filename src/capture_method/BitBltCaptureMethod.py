@@ -12,7 +12,7 @@ import win32ui
 from win32 import win32gui
 
 from capture_method.CaptureMethodBase import CaptureMethodBase
-from utils import RGBA_CHANNEL_COUNT, get_window_bounds, is_valid_hwnd
+from utils import RGBA_CHANNEL_COUNT, get_window_bounds, is_valid_hwnd, try_delete_dc
 
 if TYPE_CHECKING:
     from AutoSplit import AutoSplit
@@ -66,10 +66,12 @@ class BitBltCaptureMethod(CaptureMethodBase):
             image = np.frombuffer(cast(bytes, bitmap.GetBitmapBits(True)), dtype=np.uint8)
             image.shape = (selection["height"], selection["width"], RGBA_CHANNEL_COUNT)
         except (win32ui.error, pywintypes.error):
+            # Invalid handle or the window was closed while it was being manipulated
             return None, False
+
         # Cleanup DC and handle
-        dc_object.DeleteDC()
-        compatible_dc.DeleteDC()
+        try_delete_dc(dc_object)
+        try_delete_dc(compatible_dc)
         win32gui.ReleaseDC(hwnd, window_dc)
         win32gui.DeleteObject(bitmap.GetHandle())
         return image, False

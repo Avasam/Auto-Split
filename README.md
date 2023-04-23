@@ -232,8 +232,10 @@ The AutoSplit LiveSplit Component will directly connect AutoSplit with LiveSplit
 ## Resources
 
 Still need help?
-
-- [Open an issue](../../issues)
+<!-- open issues sorted by reactions -->
+- [Check if your issue already exists](../../issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc)
+  - If it does, upvote it 👍
+  - If it doesn't, create a new one
 - Join the [AutoSplit Discord  
 ![AutoSplit Discord](https://badgen.net/discord/members/Qcbxv9y)](https://discord.gg/Qcbxv9y)
 
