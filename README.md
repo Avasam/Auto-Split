@@ -1,3 +1,7 @@
+# ⚠ Development moved upstream.
+
+I am now contributing directly in https://github.com/Toufool/AutoSplit . Please go there for development updates!
+
 <!-- markdownlint-disable-next-line MD033 -->
 # <img src="res/icon.ico" alt="LiveSplit" height="42" width="42" align="top"/> AutoSplit [![CodeQL](/../../actions/workflows/codeql-analysis.yml/badge.svg)](/../../actions/workflows/codeql-analysis.yml) [![Lint and build](/../../actions/workflows/lint-and-build.yml/badge.svg)](/../../actions/workflows/lint-and-build.yml)
 
